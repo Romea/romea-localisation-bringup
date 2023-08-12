@@ -1,0 +1,32 @@
+/**:
+  ros__parameters:
+    debug: true
+#    log_directory: "foo"
+    base_footprint_frame_id: "base_link"
+    map_frame_id: "map"
+    publish_rate: 10
+    configuration:
+      filter:
+        state_pool_size: 1000
+        number_of_particles: 200
+      predictor:
+        maximal_dead_recknoning_travelled_distance: 10.
+        maximal_dead_recknoning_elapsed_time: 3.
+        maximal_position_circular_error_probability: 0.2
+      angular_speed_updater:
+        topic: angular_speed
+        minimal_rate: 10
+      linear_speeds_updater:
+        topic: twist
+        minimal_rate: 10
+      position_updater:
+        topic: position
+        minimal_rate: 1
+        trigger: always
+      course_updater:
+        topic: course
+        minimal_rate: 1
+        trigger: once
+      attitude_updater:
+        topic: attitude
+        minimal_rate: 10
