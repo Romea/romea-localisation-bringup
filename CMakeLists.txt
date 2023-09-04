@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(romea_robot_to_world_localisation_bringup)
+project(romea_localisation_bringup)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -14,7 +14,7 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 
-ament_python_install_module(python/romea_robot_to_world_localisation_bringup.py)
+ament_python_install_module(python/romea_localisation_bringup.py)
 
 
 # if(BUILD_TESTING)
