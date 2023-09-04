@@ -58,7 +58,7 @@ def get_core(robot_namespace, filter_configuration):
     filter_parameters = get_core_parameters(robot_namespace, filter_configuration)
 
     return Node(
-        package="romea_robot_to_world_localisation",
+        package="romea_robot_to_world_localisation_core",
         executable="robot_to_world_kalman_localisation_node",
         name="robot_to_world_kalman_localisation",
         parameters=filter_parameters,
