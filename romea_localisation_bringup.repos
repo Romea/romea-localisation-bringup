@@ -1,0 +1,10 @@
+repositories:
+  romea_core/romea_common:
+    type: git
+    url: https://github.com/Romea/romea-core-common.git
+    version: main
+
+  romea_ros2/localisation/romea_localisation_bringup:
+    type: git
+    url: https://github.com/Romea/romea-localisation-bringup.git
+    version: devel
