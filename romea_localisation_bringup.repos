@@ -1,8 +1,13 @@
 repositories:
   romea_core/romea_common:
     type: git
-    url: git@gitlab-ssh.irstea.fr:romea_core/romea-core-common.git
-    version: main
+    url: git@gitlab-ssh.irstea.fr:romea_core/romea_common.git
+    version: devel
+
+  romea_ros2/tools/romea_common:
+    type: git
+    url: git@gitlab-ssh.irstea.fr:romea_ros2/tools/romea_common.git
+    version: devel
 
   romea_ros2/localisation/romea_localisation_bringup:
     type: git
