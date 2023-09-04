@@ -28,6 +28,9 @@ galactic_focal_build:
   stage: build
   script:
     - colcon build
+    - source install/setup.bash
+    - colcon test --packages-select romea_localisation_bringup
+    - colcon test-result --verbose
 
 # galatic
 humble_jammy_build:
@@ -35,3 +38,6 @@ humble_jammy_build:
   stage: build
   script:
     - colcon build
+    - source install/setup.bash
+    - colcon test --packages-select romea_localisation_bringup
+    - colcon test-result --verbose
