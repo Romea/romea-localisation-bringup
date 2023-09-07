@@ -49,19 +49,19 @@ def get_core_parameters(robot_namespace, core_configuration):
     base_footprint_frame_id = robot_prefix(robot_namespace) + "base_link"
 
     return [
-        core_configuration,
+        core_configuration["configuration"],
         {"base_footprint_frame_id": base_footprint_frame_id},
     ]
 
 
-def get_core(robot_namespace, filter_configuration):
-    filter_parameters = get_core_parameters(robot_namespace, filter_configuration)
+def get_core(robot_namespace, core_configuration):
+    core_parameters = get_core_parameters(robot_namespace, core_configuration)
 
     return Node(
-        package="romea_robot_to_world_localisation_core",
-        executable="robot_to_world_kalman_localisation_node",
+        package=core_configuration["pkg"],
+        executable=core_configuration["node"]+"_node",
         name="robot_to_world_kalman_localisation",
-        parameters=filter_parameters,
+        parameters=core_parameters,
         output="screen",
     )
 
