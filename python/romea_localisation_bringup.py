@@ -57,11 +57,14 @@ def get_core_parameters(robot_namespace, core_configuration):
 def get_core(robot_namespace, core_configuration):
     core_parameters = get_core_parameters(robot_namespace, core_configuration)
 
+    remappings = [("leader_filtered_odom", "/leader/localisation/filtered_odom")]
+
     return Node(
         package=core_configuration["pkg"],
         executable=core_configuration["node"]+"_node",
         name="robot_to_world_kalman_localisation",
         parameters=core_parameters,
+        remappings=remappings,
         output="screen",
     )
 
