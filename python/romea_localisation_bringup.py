@@ -49,20 +49,20 @@ def get_core_parameters(robot_namespace, core_configuration):
     base_footprint_frame_id = robot_prefix(robot_namespace) + "base_link"
 
     return [
-        core_configuration["configuration"],
+        core_configuration,
         {"base_footprint_frame_id": base_footprint_frame_id},
     ]
 
 
 def get_core(robot_namespace, core_configuration):
-    core_parameters = get_core_parameters(robot_namespace, core_configuration)
+    core_parameters = get_core_parameters(robot_namespace, core_configuration["configuration"])
 
     remappings = [("leader_filtered_odom", "/leader/localisation/filtered_odom")]
 
     return Node(
         package=core_configuration["pkg"],
-        executable=core_configuration["node"]+"_node",
-        name="robot_to_world_kalman_localisation",
+        executable=core_configuration["node"],
+        name=core_configuration["node"],
         parameters=core_parameters,
         remappings=remappings,
         output="screen",
@@ -234,7 +234,7 @@ def get_gps_plugin(
 
 
 def get_rtls_plugin_configuration(plugins_configurations):
-    return plugins_configurations["plugins"]["rtls"]["configuration"]
+    return plugins_configurations["plugins"]["rtls"]
 
 
 def get_rtls_tranceivers_meta_descriptions(plugins_configurations, robot_sensors_meta_descriptions):
@@ -258,6 +258,9 @@ def get_rtls_plugin_parameters(
     responders_names = get_transceivers_ros_names("", responders_meta_descriptions)
     responders_ids = get_transceivers_ids(responders_meta_descriptions)
     responders_xyz = get_transceivers_xyz(responders_meta_descriptions)
+
+    print(initiators_names)
+    print(initiators_ids)
 
     return [
         rtls_plugin_configuration,
@@ -296,15 +299,18 @@ def get_rtls_plugin(
     rtls_plugin_parameters = get_rtls_plugin_parameters(
         mode,
         robot_namespace,
-        rtls_plugin_configuration,
+        rtls_plugin_configuration["configuration"],
         initiators_meta_descriptions,
         responders_meta_descriptions,
     )
 
+    print(rtls_plugin_configuration)
+    print(rtls_plugin_parameters)
+
     return Node(
-        package="romea_robot_to_world_localisation_rtls_plugin",
-        executable="robot_to_world_rtls_localisation_plugin_node",
-        name="rtls_localisation_plugin",
+        package=rtls_plugin_configuration["pkg"],
+        executable=rtls_plugin_configuration["node"],
+        name=rtls_plugin_configuration["node"],
         parameters=rtls_plugin_parameters,
         # remappings=gps_plugin_remappings,
         output="screen",
