@@ -75,11 +75,15 @@ def get_sensors_meta_descriptions_file_paths(context):
         LaunchConfiguration("sensors_meta_description_file_paths").perform(context)
     )
 
+
 def get_leader_namespace(context):
     return LaunchConfiguration("leader_namespace").perform(context)
 
-def get_leader_transceiver_meta_description_file_path(context):
-    return LaunchConfiguration("leader_transceiver_meta_description_file_path").perform(context)
+
+def get_leader_transceivers_meta_description_file_paths(context):
+    return yaml.safe_load(
+        LaunchConfiguration("leader_transceivers_meta_description_file_paths").perform(context)
+    )
 
 
 def get_sensor_meta_description_file_path(context, sensor_meta_description_filename):
@@ -127,6 +131,7 @@ def launch_setup(context, *args, **kwargs):
         "base_meta_description_file_path": get_base_meta_description_file_path(context),
         "launch_file": odo_plugin_configuration["launch"],
         "component_container": container,
+
     } | additional_launch_arguments(odo_plugin_configuration)
 
     actions.append(
@@ -153,8 +158,8 @@ def launch_setup(context, *args, **kwargs):
             "robot_namespace": robot_namespace,
             "base_meta_description_file_path": get_base_meta_description_file_path(context),
             "imu_meta_description_file_path": imu_meta_description_file_path,
-            "component_container": container,
             "launch_file": imu_plugin_configuration["launch"],
+            "component_container": container,
         } | additional_launch_arguments(imu_plugin_configuration)
 
         actions.append(
@@ -171,16 +176,14 @@ def launch_setup(context, *args, **kwargs):
 
     leader_namespace = get_leader_namespace(context)
 
-    leader_transceiver_meta_description_file_path = (
-        get_leader_transceiver_meta_description_file_path(context)
+    leader_transceivers_meta_description_file_paths = (
+        get_leader_transceivers_meta_description_file_paths(context)
     )
 
     robot_transceivers_meta_description_file_paths = get_sensors_meta_description_file_paths(
-        context,
-        get_sensors_meta_description_filenames(rtls_plugin_configuration),
+        context, get_sensors_meta_description_filenames(rtls_plugin_configuration),
     )
 
-    print("toto")
     launch_arguments = {
         "mode": mode,
         "initiators_namespace": robot_namespace,
@@ -189,7 +192,7 @@ def launch_setup(context, *args, **kwargs):
         ),
         "responders_namespace": leader_namespace,
         "responders_meta_description_file_paths": str(
-            [leader_transceiver_meta_description_file_path]
+            leader_transceivers_meta_description_file_paths
         ),
         "plugin_package": rtls_plugin_configuration["pkg"],
         "launch_file": rtls_plugin_configuration["launch"],
@@ -211,10 +214,8 @@ def launch_setup(context, *args, **kwargs):
     launch_arguments = {
         "robot_namespace": robot_namespace,
         "has_imu_plugin": str("imu" in localisation_configuration["plugins"]),
-        "has_rtls_plugin": str("rtls" in localisation_configuration["plugins"]),
-        "use_constraints": str(len(robot_transceivers_meta_description_file_paths) == 2),
-        "launch_file": core_configuration["launch"],
         "component_container": container,
+        "launch_file": core_configuration["launch"],
     } | additional_launch_arguments(core_configuration)
 
     actions.append(
@@ -249,7 +250,7 @@ def generate_launch_description():
     declared_arguments.append(DeclareLaunchArgument("leader_namespace"))
 
     declared_arguments.append(
-        DeclareLaunchArgument("leader_transceiver_meta_description_file_path")
+        DeclareLaunchArgument("leader_transceivers_meta_description_file_paths")
     )
 
     return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])

@@ -108,7 +108,7 @@ def get_odo_plugin(mode, robot_namespace, odo_plugin_configuration, base_meta_de
 
 
 def get_imu_plugin_configuration(localisation_configurations):
-    return localisation_configurations["plugins"]["imu"]["configuration"]
+    return localisation_configurations["plugins"]["imu"]
 
 
 def get_imu_meta_description(localisation_configurations, robot_sensors_meta_descriptions):
@@ -153,7 +153,7 @@ def get_imu_plugin(
 ):
 
     imu_plugin_parameters = get_imu_plugin_parameters(
-        mode, imu_plugin_configuration, imu_meta_description
+        mode, imu_plugin_configuration["configuration"], imu_meta_description
     )
 
     imu_plugin_remappings = get_imu_plugin_remappings(
@@ -171,7 +171,7 @@ def get_imu_plugin(
 
 
 def get_gps_plugin_configuration(localisation_configurations):
-    return localisation_configurations["plugins"]["gps"]["configuration"]
+    return localisation_configurations["plugins"]["gps"]
 
 
 def get_gps_meta_description(localisation_configurations, robot_sensors_meta_descriptions):
@@ -216,7 +216,38 @@ def get_gps_plugin(
 ):
 
     gps_plugin_parameters = get_gps_plugin_parameters(
-        gps_plugin_configuration, gps_meta_description, wgs84_anchor
+        gps_plugin_configuration["configuration"], gps_meta_description, wgs84_anchor
+    )
+
+    gps_plugin_remappings = get_gps_plugin_remappings(
+        robot_namespace, gps_meta_description, odo_plugin_configuration
+    )
+
+    return Node(
+        package="romea_gps_localisation_plugin",
+        executable="gps_localisation_plugin_node",
+        name="gps_localisation_plugin",
+        parameters=gps_plugin_parameters,
+        remappings=gps_plugin_remappings,
+        output="screen",
+    )
+
+
+def get_gps_plugin2(
+    mode,
+    robot_namespace,
+    gps_plugin_configuration,
+    gps_meta_description,
+    odo_plugin_configuration,
+    wgs84_anchor,
+):
+
+    gps_namespace = get_device_namespace(robot_namespace, gps_meta_description)
+    base_controller_namespace = get_controller_namespace(robot_namespace, odo_plugin_configuration)
+    
+
+    gps_plugin_parameters = get_gps_plugin_parameters(
+        gps_plugin_configuration["configuration"], gps_meta_description, wgs84_anchor
     )
 
     gps_plugin_remappings = get_gps_plugin_remappings(
@@ -259,9 +290,6 @@ def get_rtls_plugin_parameters(
     responders_ids = get_transceivers_ids(responders_meta_descriptions)
     responders_xyz = get_transceivers_xyz(responders_meta_descriptions)
 
-    print(initiators_names)
-    print(initiators_ids)
-
     return [
         rtls_plugin_configuration,
         {"enable_scheduler": "replay" not in mode},
@@ -303,9 +331,6 @@ def get_rtls_plugin(
         initiators_meta_descriptions,
         responders_meta_descriptions,
     )
-
-    print(rtls_plugin_configuration)
-    print(rtls_plugin_parameters)
 
     return Node(
         package=rtls_plugin_configuration["pkg"],
