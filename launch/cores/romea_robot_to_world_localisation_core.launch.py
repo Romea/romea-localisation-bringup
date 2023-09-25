@@ -30,6 +30,7 @@ from romea_common_bringup import save_configuration
 def get_robot_namespace(context):
     return LaunchConfiguration("robot_namespace").perform(context)
 
+
 def get_filter_type(context):
     return LaunchConfiguration("filter_type").perform(context)
 
@@ -55,7 +56,9 @@ def get_maximal_dead_recknoning_elapsed_time(context):
 
 
 def get_maximal_dead_recknoning_travelled_distance(context):
-    return float(LaunchConfiguration("maximal_dead_recknoning_travelled_distance").perform(context))
+    return float(
+        LaunchConfiguration("maximal_dead_recknoning_travelled_distance").perform(context)
+    )
 
 
 def has_imu_plugin(context):
@@ -81,8 +84,10 @@ def launch_setup(context, *args, **kwargs):
     state_pool_size = get_state_pool_size(context)
     number_of_particles = get_number_of_particles(context)
     maximal_dead_recknoning_elapsed_time = get_maximal_dead_recknoning_elapsed_time(context)
-    maximal_dead_recknoning_travelled_distance = get_maximal_dead_recknoning_travelled_distance(context)
-  
+    maximal_dead_recknoning_travelled_distance = get_maximal_dead_recknoning_travelled_distance(
+        context
+    )
+
     configuration = {}
     configuration["filter"] = {
         "state_pool_size": state_pool_size,
@@ -112,19 +117,19 @@ def launch_setup(context, *args, **kwargs):
     configuration_file_path = "/tmp/" + robot_namespace + "_robot_to_world_localisation_core.yaml"
     save_configuration(configuration, configuration_file_path)
 
-    
-    core =  IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                get_package_share_directory("romea_robot_to_world_localisation_core")
-                + "/launch/" + get_launch_file(context)
-            ),
-            launch_arguments={
-                "filter_type": get_filter_type(context),
-                "filter_configuration_file_path": configuration_file_path,
-                "component_container": get_component_container(context),
-            }.items()
-        )
-    
+    core = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            get_package_share_directory("romea_robot_to_world_localisation_core")
+            + "/launch/"
+            + get_launch_file(context)
+        ),
+        launch_arguments={
+            "filter_type": get_filter_type(context),
+            "filter_configuration_file_path": configuration_file_path,
+            "component_container": get_component_container(context),
+        }.items(),
+    )
+
     return [core]
 
 
@@ -151,7 +156,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument("maximal_dead_recknoning_travelled_distance", default_value="2.")
     )
-    
+
     declared_arguments.append(DeclareLaunchArgument("publish_rate", default_value="10"))
 
     declared_arguments.append(DeclareLaunchArgument("debug", default_value="false"))
@@ -161,6 +166,5 @@ def generate_launch_description():
     declared_arguments.append(DeclareLaunchArgument("has_rtls_plugin", default_value="false"))
 
     declared_arguments.append(DeclareLaunchArgument("component_container"))
-
 
     return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])

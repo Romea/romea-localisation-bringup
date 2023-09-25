@@ -25,20 +25,17 @@ from launch.substitutions import LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 
+from romea_common_bringup import save_configuration, load_meta_descriptions
 from romea_rtls_transceiver_bringup import (
     get_transceivers_ros_names,
     get_transceivers_ids,
     get_transceivers_xyz,
 )
 
-from romea_common_bringup import (
-    save_configuration,
-    load_meta_descriptions,
-)
-
 
 def get_mode(context):
     return LaunchConfiguration("mode").perform(context)
+
 
 def get_plugin_package(context):
     return LaunchConfiguration("plugin_package").perform(context)
@@ -73,9 +70,11 @@ def get_initiators_namespace(context):
 
 
 def get_initiators_meta_descriptions(context):
-    return load_meta_descriptions(yaml.safe_load(
-        LaunchConfiguration("initiators_meta_description_file_paths").perform(context)
-    ))
+    return load_meta_descriptions(
+        yaml.safe_load(
+            LaunchConfiguration("initiators_meta_description_file_paths").perform(context)
+        )
+    )
 
 
 def get_responders_namespace(context):
@@ -83,9 +82,11 @@ def get_responders_namespace(context):
 
 
 def get_responders_meta_descriptions(context):
-    return load_meta_descriptions(yaml.safe_load(
-        LaunchConfiguration("responders_meta_description_file_paths").perform(context)
-    ))
+    return load_meta_descriptions(
+        yaml.safe_load(
+            LaunchConfiguration("responders_meta_description_file_paths").perform(context)
+        )
+    )
 
 
 def get_component_container(context):
@@ -99,18 +100,20 @@ def launch_setup(context, *args, **kwargs):
     initiators_meta_descriptions = get_initiators_meta_descriptions(context)
     responders_namespace = get_responders_namespace(context)
     responders_meta_descriptions = get_responders_meta_descriptions(context)
-    
+
     initiators_names = get_transceivers_ros_names(
-        initiators_namespace, initiators_meta_descriptions)
+        initiators_namespace, initiators_meta_descriptions
+    )
     initiators_ids = get_transceivers_ids(initiators_meta_descriptions)
     initiators_xyz = get_transceivers_xyz(initiators_meta_descriptions)
     responders_names = get_transceivers_ros_names(
-        responders_namespace, responders_meta_descriptions)
+        responders_namespace, responders_meta_descriptions
+    )
     responders_ids = get_transceivers_ids(responders_meta_descriptions)
     responders_xyz = get_transceivers_xyz(responders_meta_descriptions)
 
     configuration = {}
-    configuration["enable_scheduler"]: "replay" not in mode
+    configuration["enable_scheduler"]: "replay" not in mode  # noqa: F821
     configuration["poll_rate"] = get_poll_rate(context)
     configuration["minimal_range"] = get_minimal_range(context)
     configuration["maximal_range"] = get_maximal_range(context)
@@ -177,7 +180,6 @@ def generate_launch_description():
         DeclareLaunchArgument("rx_power_outlier_rejection_threshold", default_value="20")
     )
 
- 
     declared_arguments.append(DeclareLaunchArgument("responders_meta_description_file_paths"))
 
     declared_arguments.append(DeclareLaunchArgument("component_container"))

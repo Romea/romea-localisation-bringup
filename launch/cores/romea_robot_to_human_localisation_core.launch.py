@@ -52,7 +52,9 @@ def get_maximal_dead_recknoning_elapsed_time(context):
 
 
 def get_maximal_dead_recknoning_travelled_distance(context):
-    return float(LaunchConfiguration("maximal_dead_recknoning_travelled_distance").perform(context))
+    return float(
+        LaunchConfiguration("maximal_dead_recknoning_travelled_distance").perform(context)
+    )
 
 
 def get_leader_motion_noise_std(context):
@@ -161,7 +163,9 @@ def generate_launch_description():
         DeclareLaunchArgument("maximal_dead_recknoning_travelled_distance", default_value="1.")
     )
 
-    declared_arguments.append(DeclareLaunchArgument("leader_motion_noise_std", default_value="1.0"))
+    declared_arguments.append(
+        DeclareLaunchArgument("leader_motion_noise_std", default_value="1.0")
+    )
 
     declared_arguments.append(DeclareLaunchArgument("publish_rate", default_value="10"))
 

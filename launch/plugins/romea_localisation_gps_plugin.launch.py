@@ -27,28 +27,10 @@ from launch_ros.actions import SetRemap
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 
+from romea_common_bringup import load_meta_description, save_configuration, load_configuration
+from romea_localisation_bringup import get_device_namespace, get_controller_namespace
 from romea_mobile_base_bringup import load_meta_description as load_base_description
 from romea_gps_bringup import get_gps_specifications
-
-from romea_common_bringup import (
-    load_meta_description,
-    save_configuration,
-    load_configuration,
-    device_namespace,
-)
-
-
-def get_device_namespace(parent_namespace, sensor_meta_description):
-
-    return device_namespace(
-        parent_namespace,
-        sensor_meta_description.get_namespace(),
-        sensor_meta_description.get_name(),
-    )
-
-
-def get_controller_namespace(robot_namespace, base_meta_description):
-    return get_device_namespace(robot_namespace, base_meta_description) + "/controller"
 
 
 def get_mode(context):

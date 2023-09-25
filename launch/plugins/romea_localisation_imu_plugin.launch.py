@@ -27,27 +27,10 @@ from launch_ros.actions import SetRemap
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 
+from romea_common_bringup import load_meta_description, save_configuration
+from romea_localisation_bringup import get_device_namespace, get_controller_namespace
 from romea_mobile_base_bringup import load_meta_description as load_base_description
 from romea_imu_bringup import get_imu_specifications
-
-from romea_common_bringup import (
-    load_meta_description,
-    save_configuration,
-    device_namespace,
-)
-
-
-def get_device_namespace(parent_namespace, sensor_meta_description):
-
-    return device_namespace(
-        parent_namespace,
-        sensor_meta_description.get_namespace(),
-        sensor_meta_description.get_name(),
-    )
-
-
-def get_controller_namespace(robot_namespace, base_meta_description):
-    return get_device_namespace(robot_namespace, base_meta_description) + "/controller"
 
 
 def get_mode(context):
@@ -90,7 +73,7 @@ def launch_setup(context, *args, **kwargs):
     configuration["imu"]["rate"] = float(imu_meta_description.get_rate())
     configuration["imu"]["xyz"] = imu_meta_description.get_xyz()
     configuration["imu"]["rpy"] = imu_meta_description.get_rpy_rad()
-    configuration["enable_accelerations"]: "live" in mode
+    configuration["enable_accelerations"]: "live" in mode  # noqa: F821
     configuration["restamping"] = get_restamping(context)
 
     configuration_file_path = "/tmp/"+robot_namespace+"_localisation_imu_plugin.yaml"

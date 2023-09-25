@@ -28,20 +28,11 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 
 from romea_common_bringup import load_configuration
-
-
-def additional_launch_arguments(gps_plugin_configuration):
-    plugin_configuration = gps_plugin_configuration.get("configuration", None)
-
-    if plugin_configuration is not None:
-        return dict(
-            zip(
-                plugin_configuration.keys(),
-                [str(value) for value in plugin_configuration.values()],
-            )
-        )
-    else:
-        return {}
+from romea_localisation_bringup import (
+    additional_launch_arguments,
+    get_sensor_meta_description_file_path,
+    get_sensors_meta_description_file_paths
+)
 
 
 def get_sensor_meta_description_filename(gps_plugin_configuration):
@@ -86,30 +77,6 @@ def get_leader_transceivers_meta_description_file_paths(context):
     )
 
 
-def get_sensor_meta_description_file_path(context, sensor_meta_description_filename):
-
-    sensors_meta_description_file_paths = get_sensors_meta_descriptions_file_paths(context)
-
-    sensor_meta_description_file_path = next(
-        (
-            sensor_meta_description_file_path
-            for sensor_meta_description_file_path in sensors_meta_description_file_paths
-            if sensor_meta_description_filename in sensor_meta_description_file_path
-        ),
-        None,
-    )
-
-    return sensor_meta_description_file_path
-
-
-def get_sensors_meta_description_file_paths(context, sensors_meta_description_filenames):
-
-    return [
-        get_sensor_meta_description_file_path(context, meta_description_filename)
-        for meta_description_filename in sensors_meta_description_filenames
-    ]
-
-
 def launch_setup(context, *args, **kwargs):
 
     mode = get_mode(context)
@@ -150,7 +117,8 @@ def launch_setup(context, *args, **kwargs):
         imu_plugin_configuration = localisation_configuration["plugins"]["imu"]
 
         imu_meta_description_file_path = get_sensor_meta_description_file_path(
-            context, get_sensor_meta_description_filename(imu_plugin_configuration)
+            get_sensors_meta_descriptions_file_paths(context),
+            get_sensor_meta_description_filename(imu_plugin_configuration)
         )
 
         launch_arguments = {
@@ -181,7 +149,8 @@ def launch_setup(context, *args, **kwargs):
     )
 
     robot_transceivers_meta_description_file_paths = get_sensors_meta_description_file_paths(
-        context, get_sensors_meta_description_filenames(rtls_plugin_configuration),
+        get_sensors_meta_descriptions_file_paths(context),
+        get_sensors_meta_description_filenames(rtls_plugin_configuration),
     )
 
     launch_arguments = {

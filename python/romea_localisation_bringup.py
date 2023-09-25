@@ -12,20 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from launch_ros.actions import Node
-from romea_common_bringup import (
-    device_namespace,
-    robot_prefix,
-    find_meta_description,
-    find_meta_descriptions,
-)
-from romea_imu_bringup import get_imu_specifications
-from romea_gps_bringup import get_gps_specifications
-from romea_rtls_transceiver_bringup import (
-    get_transceivers_ros_names,
-    get_transceivers_ids,
-    get_transceivers_xyz,
-)
+from romea_common_bringup import device_namespace
 
 
 def get_device_namespace(parent_namespace, sensor_meta_description):
@@ -41,302 +28,43 @@ def get_controller_namespace(robot_namespace, base_meta_description):
     return get_device_namespace(robot_namespace, base_meta_description) + "/controller"
 
 
-def get_core_configuration(localisation_configuration):
-    return localisation_configuration["core"]
+def additional_launch_arguments(plugin_description):
+    plugin_configuration = plugin_description.get("configuration", None)
 
-
-def get_core_parameters(robot_namespace, core_configuration):
-    base_footprint_frame_id = robot_prefix(robot_namespace) + "base_link"
-
-    return [
-        core_configuration,
-        {"base_footprint_frame_id": base_footprint_frame_id},
-    ]
-
-
-def get_core(robot_namespace, core_configuration):
-    core_parameters = get_core_parameters(robot_namespace, core_configuration["configuration"])
-
-    remappings = [("leader_filtered_odom", "/leader/localisation/filtered_odom")]
-
-    return Node(
-        package=core_configuration["pkg"],
-        executable=core_configuration["node"],
-        name=core_configuration["node"],
-        parameters=core_parameters,
-        remappings=remappings,
-        output="screen",
-    )
-
-
-def get_odo_plugin_configuration(localisation_configuration):
-    return localisation_configuration["plugins"]["odo"]["configuration"]
-
-
-def get_odo_plugin_parameters(mode, odo_plugin_configuration):
-    return [odo_plugin_configuration]
-
-
-def get_odo_plugin_remappings(robot_namespace, odo_plugin_configuration, base_meta_description):
-
-    controller_topic = odo_plugin_configuration["controller_topic"]
-    controller_namespace = get_controller_namespace(robot_namespace, base_meta_description)
-
-    return [
-        (
-            "vehicle_controller/" + controller_topic,
-            controller_namespace + "/" + controller_topic,
+    if plugin_configuration is not None:
+        return dict(
+            zip(
+                plugin_configuration.keys(),
+                [str(value) for value in plugin_configuration.values()],
+            )
         )
-    ]
+    else:
+        return {}
 
 
-def get_odo_plugin(mode, robot_namespace, odo_plugin_configuration, base_meta_description):
-
-    odo_plugin_parameters = get_odo_plugin_parameters(mode, odo_plugin_configuration)
-
-    odo_plugin_remappings = get_odo_plugin_remappings(
-        robot_namespace, odo_plugin_configuration, base_meta_description
-    )
-    return Node(
-        package="romea_odo_localisation_plugin",
-        executable="odo_localisation_plugin_node",
-        name="odo_localisation_plugin",
-        parameters=odo_plugin_parameters,
-        remappings=odo_plugin_remappings,
-        output="screen",
-    )
-
-
-def get_imu_plugin_configuration(localisation_configurations):
-    return localisation_configurations["plugins"]["imu"]
-
-
-def get_imu_meta_description(localisation_configurations, robot_sensors_meta_descriptions):
-    return find_meta_description(
-        robot_sensors_meta_descriptions,
-        localisation_configurations["plugins"]["imu"]["input_sensor_name"],
-    )
-
-
-def get_imu_plugin_parameters(mode, imu_plugin_configuration, imu_meta_description):
-
-    imu_specifications = get_imu_specifications(imu_meta_description)
-
-    return [
-        imu_plugin_configuration,
-        {"enable_accelerations": ("live" in mode)},
-        {"imu": imu_specifications},
-        {"imu.rate": float(imu_meta_description.get_rate())},
-        {"imu.xyz": imu_meta_description.get_xyz()},
-        {"imu.rpy": imu_meta_description.get_rpy_rad()},
-    ]
-
-
-def get_imu_plugin_remappings(robot_namepsace, imu_meta_description, base_meta_description):
-
-    imu_namespace = get_device_namespace(robot_namepsace, imu_meta_description)
-
-    controller_namespace = get_controller_namespace(robot_namepsace, base_meta_description)
-
-    return [
-        ("imu/data", imu_namespace + "/data"),
-        ("vehicle_controller/odom", controller_namespace + "/odom"),
-    ]
-
-
-def get_imu_plugin(
-    mode,
-    robot_namespace,
-    imu_plugin_configuration,
-    imu_meta_description,
-    base_meta_description,
+def get_sensor_meta_description_file_path(
+    sensors_meta_description_file_paths, sensor_meta_description_filename
 ):
 
-    imu_plugin_parameters = get_imu_plugin_parameters(
-        mode, imu_plugin_configuration["configuration"], imu_meta_description
+    sensor_meta_description_file_path = next(
+        (
+            sensor_meta_description_file_path
+            for sensor_meta_description_file_path in sensors_meta_description_file_paths
+            if sensor_meta_description_filename in sensor_meta_description_file_path
+        ),
+        None,
     )
 
-    imu_plugin_remappings = get_imu_plugin_remappings(
-        robot_namespace, imu_meta_description, base_meta_description
-    )
-
-    return Node(
-        package="romea_imu_localisation_plugin",
-        executable="imu_localisation_plugin_node",
-        name="imu_localisation_plugin",
-        parameters=imu_plugin_parameters,
-        remappings=imu_plugin_remappings,
-        output="screen",
-    )
+    return sensor_meta_description_file_path
 
 
-def get_gps_plugin_configuration(localisation_configurations):
-    return localisation_configurations["plugins"]["gps"]
-
-
-def get_gps_meta_description(localisation_configurations, robot_sensors_meta_descriptions):
-    return find_meta_description(
-        robot_sensors_meta_descriptions,
-        localisation_configurations["plugins"]["gps"]["input_sensor_name"],
-    )
-
-
-def get_gps_plugin_parameters(gps_plugin_configuration, gps_meta_description, wgs84_anchor):
-
-    gps_specifications = get_gps_specifications(gps_meta_description)
+def get_sensors_meta_description_file_paths(
+    sensors_meta_description_file_paths, sensors_meta_description_filenames
+):
 
     return [
-        gps_plugin_configuration,
-        {"wgs84_anchor": wgs84_anchor},
-        {"gps": gps_specifications},
-        {"gps.rate": float(gps_meta_description.get_rate())},
-        {"gps.xyz": gps_meta_description.get_xyz()},
+        get_sensor_meta_description_file_path(
+            sensors_meta_description_file_paths, meta_description_filename
+        )
+        for meta_description_filename in sensors_meta_description_filenames
     ]
-
-
-def get_gps_plugin_remappings(robot_namespace, gps_meta_description, base_meta_description):
-
-    gps_namespace = get_device_namespace(robot_namespace, gps_meta_description)
-
-    controller_namespace = get_controller_namespace(robot_namespace, base_meta_description)
-
-    return [
-        ("gps/nmea_sentence", gps_namespace + "/nmea_sentence"),
-        ("vehicle_controller/odom", controller_namespace + "/odom"),
-    ]
-
-
-def get_gps_plugin(
-    mode,
-    robot_namespace,
-    gps_plugin_configuration,
-    gps_meta_description,
-    odo_plugin_configuration,
-    wgs84_anchor,
-):
-
-    gps_plugin_parameters = get_gps_plugin_parameters(
-        gps_plugin_configuration["configuration"], gps_meta_description, wgs84_anchor
-    )
-
-    gps_plugin_remappings = get_gps_plugin_remappings(
-        robot_namespace, gps_meta_description, odo_plugin_configuration
-    )
-
-    return Node(
-        package="romea_gps_localisation_plugin",
-        executable="gps_localisation_plugin_node",
-        name="gps_localisation_plugin",
-        parameters=gps_plugin_parameters,
-        remappings=gps_plugin_remappings,
-        output="screen",
-    )
-
-
-def get_gps_plugin2(
-    mode,
-    robot_namespace,
-    gps_plugin_configuration,
-    gps_meta_description,
-    odo_plugin_configuration,
-    wgs84_anchor,
-):
-
-    gps_namespace = get_device_namespace(robot_namespace, gps_meta_description)
-    base_controller_namespace = get_controller_namespace(robot_namespace, odo_plugin_configuration)
-    
-
-    gps_plugin_parameters = get_gps_plugin_parameters(
-        gps_plugin_configuration["configuration"], gps_meta_description, wgs84_anchor
-    )
-
-    gps_plugin_remappings = get_gps_plugin_remappings(
-        robot_namespace, gps_meta_description, odo_plugin_configuration
-    )
-
-    return Node(
-        package="romea_gps_localisation_plugin",
-        executable="gps_localisation_plugin_node",
-        name="gps_localisation_plugin",
-        parameters=gps_plugin_parameters,
-        remappings=gps_plugin_remappings,
-        output="screen",
-    )
-
-
-def get_rtls_plugin_configuration(plugins_configurations):
-    return plugins_configurations["plugins"]["rtls"]
-
-
-def get_rtls_tranceivers_meta_descriptions(plugins_configurations, robot_sensors_meta_descriptions):
-    return find_meta_descriptions(
-        robot_sensors_meta_descriptions,
-        plugins_configurations["plugins"]["rtls"]["input_sensors_names"],
-    )
-
-
-def get_rtls_plugin_parameters(
-    mode,
-    robot_namespace,
-    rtls_plugin_configuration,
-    initiators_meta_descriptions,
-    responders_meta_descriptions,
-):
-
-    initiators_names = get_transceivers_ros_names(robot_namespace, initiators_meta_descriptions)
-    initiators_ids = get_transceivers_ids(initiators_meta_descriptions)
-    initiators_xyz = get_transceivers_xyz(initiators_meta_descriptions)
-    responders_names = get_transceivers_ros_names("", responders_meta_descriptions)
-    responders_ids = get_transceivers_ids(responders_meta_descriptions)
-    responders_xyz = get_transceivers_xyz(responders_meta_descriptions)
-
-    return [
-        rtls_plugin_configuration,
-        {"enable_scheduler": "replay" not in mode},
-        {"initiators_names": initiators_names},
-        {"initiators_ids": initiators_ids},
-        {
-            "initiators_positions": dict(
-                zip(
-                    initiators_names,
-                    initiators_xyz,
-                )
-            )
-        },
-        {"responders_names": responders_names},
-        {"responders_ids": responders_ids},
-        {
-            "responders_positions": dict(
-                zip(
-                    responders_names,
-                    responders_xyz,
-                )
-            )
-        },
-    ]
-
-
-def get_rtls_plugin(
-    mode,
-    robot_namespace,
-    rtls_plugin_configuration,
-    initiators_meta_descriptions,
-    responders_meta_descriptions,
-):
-
-    rtls_plugin_parameters = get_rtls_plugin_parameters(
-        mode,
-        robot_namespace,
-        rtls_plugin_configuration["configuration"],
-        initiators_meta_descriptions,
-        responders_meta_descriptions,
-    )
-
-    return Node(
-        package=rtls_plugin_configuration["pkg"],
-        executable=rtls_plugin_configuration["node"],
-        name=rtls_plugin_configuration["node"],
-        parameters=rtls_plugin_parameters,
-        # remappings=gps_plugin_remappings,
-        output="screen",
-    )
