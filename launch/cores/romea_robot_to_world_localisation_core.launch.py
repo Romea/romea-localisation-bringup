@@ -99,11 +99,15 @@ def launch_setup(context, *args, **kwargs):
     }
 
     if has_imu_plugin(context):
+        configuration["twist_updater"] = {"minimal_rate": 0}
         configuration["linear_speeds_updater"] = {"minimal_rate": 10}
         configuration["angular_speed_updater"] = {"minimal_rate": 10}
         configuration["attitude_updater"] = {"minimal_rate": 10}
     else:
         configuration["twist_updater"] = {"minimal_rate": 10}
+        configuration["linear_speeds_updater"] = {"minimal_rate": 0}
+        configuration["angular_speed_updater"] = {"minimal_rate": 0}
+        configuration["attitude_updater"] = {"minimal_rate": 0}
 
     if has_rtls_plugin(context):
         configuration["pose_updater"] = {"minimal_rate": 1, "trigger": "once"}

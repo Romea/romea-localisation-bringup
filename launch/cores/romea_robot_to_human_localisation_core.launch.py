@@ -101,15 +101,16 @@ def launch_setup(context, *args, **kwargs):
         "leader_motion_noise_std": leader_motion_noise_std,
     }
 
-    print("has imu")
     if has_imu_plugin(context):
-        print("yes")
+        configuration["twist_updater"] = {"minimal_rate": 0}
         configuration["linear_speeds_updater"] = {"minimal_rate": 10}
         configuration["angular_speed_updater"] = {"minimal_rate": 10}
         configuration["attitude_updater"] = {"minimal_rate": 10}
     else:
-        print("no")
         configuration["twist_updater"] = {"minimal_rate": 10}
+        configuration["linear_speeds_updater"] = {"minimal_rate": 0}
+        configuration["angular_speed_updater"] = {"minimal_rate": 0}
+        configuration["attitude_updater"] = {"minimal_rate": 0}
 
     configuration["position_updater"] = {"minimal_rate": 1, "trigger": "once"}
     configuration["range_updater"] = {
