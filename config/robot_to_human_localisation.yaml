@@ -1,0 +1,34 @@
+# this is an example of configuration file for robot to human localisation
+core:
+  pkg: romea_robot_to_human_localisation_core
+  launch: robot_to_human_localisation.launch.py
+  # configuration:
+  #   state_pool_size: 1000  
+  #   maximal_dead_recknoning_travelled_distance: 1.
+  #   maximal_dead_recknoning_elapsed_time: 1.
+  #   leader_motion_noise_std: 1.0
+  #   publish_rate: 10
+  #   debug: true
+plugins:
+  odo:
+    pkg: romea_localisation_odo_plugin
+    launch: odo_plugin.launch.py
+    # configuration:
+    #   controller_topic: kinematic
+    #   restamping: false
+  imu:
+    pkg: romea_localisation_imu_plugin
+    launch: imu_plugin.launch.py
+    input_sensor_meta_description_filename: xsens
+    # configuration:
+    #   restamping: false
+  rtls:
+    pkg: romea_robot_to_human_localisation_rtls_plugin
+    launch: rtls_plugin.launch.py
+    input_sensors_meta_description_filenames: [tag0, tag1]
+    # configuration:
+    #   poll_rate: 20.0
+    #   range_std: 0.1
+    #   minimal_range: 0.5
+    #   maximal_range: 20.0
+    #   rx_power_outlier_rejection_threshold: 20
