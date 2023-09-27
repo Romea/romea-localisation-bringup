@@ -122,22 +122,33 @@ def launch_setup(context, *args, **kwargs):
         "rx_power_outlier_rejection_threshold"
     ] = get_rx_power_outlier_rejection_threshold(context)
 
-    configuration["initiators_names"] = initiators_names
-    configuration["initiators_ids"] = initiators_ids
-    configuration["initiators_positions"] = dict(
-        zip(
-            initiators_names,
-            initiators_xyz,
+    if len(initiators_names) > 1:
+        configuration["initiators_names"] = initiators_names
+        configuration["initiators_ids"] = initiators_ids
+        configuration["initiators_positions"] = dict(
+            zip(
+                initiators_names,
+                initiators_xyz,
+            )
         )
-    )
-    configuration["responders_names"] = responders_names
-    configuration["responders_ids"] = responders_ids
-    configuration["responders_positions"] = dict(
-        zip(
-            responders_names,
-            responders_xyz,
+    else:
+        configuration["initiator_id"] = initiators_ids[0]
+        configuration["initiator_name"] = initiators_names[0]
+        configuration["initiator_position"] = initiators_xyz[0]
+
+    if len(responders_names) > 1:
+        configuration["responders_ids"] = responders_ids
+        configuration["responders_names"] = responders_names
+        configuration["responders_positions"] = dict(
+            zip(
+                responders_names,
+                responders_xyz,
+            )
         )
-    )
+    else:
+        configuration["responder_id"] = responders_ids[0]
+        configuration["responder_name"] = responders_names[0]
+        configuration["responder_position"] = responders_xyz[0]
 
     configuration_file_path = "/tmp/" + initiators_namespace + "_localisation_rtls_plugin.yaml"
     save_configuration(configuration, configuration_file_path)
