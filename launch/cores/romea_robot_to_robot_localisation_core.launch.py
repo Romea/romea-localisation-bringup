@@ -66,7 +66,7 @@ def get_maximal_dead_recknoning_travelled_distance(context):
 
 
 def has_imu_plugin(context):
-    return bool(LaunchConfiguration("has_imu_plugin").perform(context))
+    return eval(LaunchConfiguration("has_imu_plugin").perform(context))
 
 
 def get_component_container(context):
