@@ -115,6 +115,7 @@ def launch_setup(context, *args, **kwargs):
 
     configuration["position_updater"] = {"minimal_rate": 1, "trigger": "always"}
     configuration["course_updater"] = {"minimal_rate": 1, "trigger": "once"}
+    configuration["base_footprint_frame_id"]= robot_namespace +"_base_footprint"
     configuration["publish_rate"] = get_publish_rate(context)
     configuration["debug"] = get_debug(context)
 
