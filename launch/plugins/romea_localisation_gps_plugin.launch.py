@@ -109,6 +109,7 @@ def launch_setup(context, *args, **kwargs):
             launch_arguments={
                 "component_container": get_component_container(context),
                 "plugin_configuration_file_path": configuration_file_path,
+                "dual_antenna": str(gps_meta_description.get_dual_antenna())
             }.items()
         )
     )
