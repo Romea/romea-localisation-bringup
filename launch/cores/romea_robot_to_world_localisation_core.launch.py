@@ -118,6 +118,8 @@ def launch_setup(context, *args, **kwargs):
     configuration["publish_rate"] = get_publish_rate(context)
     configuration["debug"] = get_debug(context)
 
+    configuration["base_footprint_frame_id"] = robot_namespace + "_base_footprint"
+
     configuration_file_path = "/tmp/" + robot_namespace + "_robot_to_world_localisation_core.yaml"
     save_configuration(configuration, configuration_file_path)
 
