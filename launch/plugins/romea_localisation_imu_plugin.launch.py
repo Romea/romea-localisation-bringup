@@ -73,7 +73,7 @@ def launch_setup(context, *args, **kwargs):
     configuration["imu"]["rate"] = float(imu_meta_description.get_rate())
     configuration["imu"]["xyz"] = imu_meta_description.get_xyz()
     configuration["imu"]["rpy"] = imu_meta_description.get_rpy_rad()
-    configuration["enable_accelerations"]: "live" in mode  # noqa: F821
+    configuration["enable_accelerations"] = "live" in mode 
     configuration["restamping"] = get_restamping(context)
 
     configuration_file_path = "/tmp/"+robot_namespace+"_localisation_imu_plugin.yaml"
