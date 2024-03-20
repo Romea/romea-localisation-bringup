@@ -2,7 +2,7 @@
 core:
   pkg: romea_robot_to_world_localisation_core
   launch: robot_to_world_localisation.launch.py
-  # configuration:  
+  # configuration:
   #   filter_type: kalman
   #   state_pool_size: 1000
   #   number_of_particle: 200
@@ -20,7 +20,7 @@ plugins:
   imu:
     pkg: romea_localisation_imu_plugin
     launch: imu_plugin.launch.py
-    input_sensor_meta_description_filename: xsens 
+    input_sensor_meta_description_filename: xsens
     # configuration:
     #   restamping: false
   gps:

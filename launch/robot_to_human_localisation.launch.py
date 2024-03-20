@@ -96,7 +96,7 @@ def launch_setup(context, *args, **kwargs):
         "base_meta_description_file_path": get_base_meta_description_file_path(context),
         "launch_file": odo_plugin_configuration["launch"],
         "component_container": container,
-    } | additional_launch_arguments(odo_plugin_configuration)
+    }.items() | additional_launch_arguments(odo_plugin_configuration).items()
 
     actions.append(
         IncludeLaunchDescription(
@@ -106,7 +106,7 @@ def launch_setup(context, *args, **kwargs):
                 + odo_plugin_configuration["pkg"]
                 + ".launch.py"
             ),
-            launch_arguments=launch_arguments.items(),
+            launch_arguments=launch_arguments,
         )
     )
 
@@ -125,7 +125,7 @@ def launch_setup(context, *args, **kwargs):
             "imu_meta_description_file_path": imu_meta_description_file_path,
             "component_container": container,
             "launch_file": imu_plugin_configuration["launch"],
-        } | additional_launch_arguments(imu_plugin_configuration)
+        }.items() | additional_launch_arguments(imu_plugin_configuration).items()
 
         actions.append(
             IncludeLaunchDescription(
@@ -133,7 +133,7 @@ def launch_setup(context, *args, **kwargs):
                     get_package_share_directory("romea_localisation_bringup")
                     + "/launch/plugins/" + imu_plugin_configuration["pkg"] + ".launch.py"
                 ),
-                launch_arguments=launch_arguments.items(),
+                launch_arguments=launch_arguments,
             )
         )
 
@@ -163,7 +163,7 @@ def launch_setup(context, *args, **kwargs):
         "plugin_package": rtls_plugin_configuration["pkg"],
         "launch_file": rtls_plugin_configuration["launch"],
         "component_container": container,
-    } | additional_launch_arguments(rtls_plugin_configuration)
+    }.items() | additional_launch_arguments(rtls_plugin_configuration).items()
 
     actions.append(
         IncludeLaunchDescription(
@@ -171,7 +171,7 @@ def launch_setup(context, *args, **kwargs):
                 get_package_share_directory("romea_localisation_bringup")
                 + "/launch/plugins/romea_localisation_rtls_plugin.launch.py"
             ),
-            launch_arguments=launch_arguments.items(),
+            launch_arguments=launch_arguments,
         )
     )
 
@@ -184,7 +184,7 @@ def launch_setup(context, *args, **kwargs):
         "use_constraints": str(len(robot_transceivers_meta_description_file_paths) == 2),
         "launch_file": core_configuration["launch"],
         "component_container": container,
-    } | additional_launch_arguments(core_configuration)
+    }.items() | additional_launch_arguments(core_configuration).items()
 
     actions.append(
         IncludeLaunchDescription(
@@ -194,7 +194,7 @@ def launch_setup(context, *args, **kwargs):
                 + core_configuration["pkg"]
                 + ".launch.py"
             ),
-            launch_arguments=launch_arguments.items(),
+            launch_arguments=launch_arguments,
         )
     )
 

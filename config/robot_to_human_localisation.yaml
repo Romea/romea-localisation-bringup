@@ -3,7 +3,7 @@ core:
   pkg: romea_robot_to_human_localisation_core
   launch: robot_to_human_localisation.launch.py
   # configuration:
-  #   state_pool_size: 1000  
+  #   state_pool_size: 1000
   #   maximal_dead_recknoning_travelled_distance: 1.
   #   maximal_dead_recknoning_elapsed_time: 1.
   #   leader_motion_noise_std: 1.0

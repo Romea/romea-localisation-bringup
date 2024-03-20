@@ -35,12 +35,12 @@ from romea_localisation_bringup import (
 )
 
 
-def get_sensor_meta_description_filename(gps_plugin_configuration):
-    return gps_plugin_configuration["input_sensor_meta_description_filename"]
+def get_sensor_meta_description_filename(plugin_configuration):
+    return plugin_configuration["input_sensor_meta_description_filename"]
 
 
-def get_sensors_meta_description_filenames(gps_plugin_configuration):
-    return gps_plugin_configuration["input_sensors_meta_description_filenames"]
+def get_sensors_meta_description_filenames(plugin_configuration):
+    return plugin_configuration["input_sensors_meta_description_filenames"]
 
 
 def get_mode(context):
@@ -158,7 +158,6 @@ def launch_setup(context, *args, **kwargs):
         )
 
     gps_plugin_configuration = localisation_configuration["plugins"]["gps"]
-
     launch_arguments = {
         "mode": mode,
         "robot_namespace": robot_namespace,

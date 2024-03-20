@@ -2,7 +2,7 @@
 core:
   pkg: romea_robot_to_robot_localisation_core
   launch: robot_to_robot_localisation.launch.py
-  # configuration: 
+  # configuration:
   #   filter_type: kalman
   #   state_pool_size: 1000
   #   number_of_particle: 200

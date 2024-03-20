@@ -55,6 +55,14 @@ def get_sensor_meta_description_file_path(
         None,
     )
 
+    if not sensor_meta_description_file_path:
+        raise LookupError(
+            sensor_meta_description_filename
+            + " meta description file not found."
+            + " Available sensor meta descriptions are "
+            + str(sensors_meta_description_file_paths)
+        )
+
     return sensor_meta_description_file_path
 
 
