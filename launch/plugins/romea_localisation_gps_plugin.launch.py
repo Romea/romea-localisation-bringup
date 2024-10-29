@@ -66,7 +66,7 @@ def get_minimal_fix_quality(context):
 
 
 def get_restamping(context):
-    return bool(LaunchConfiguration("restamping").perform(context))
+    return LaunchConfiguration("restamping").perform(context).lower() == "true"
 
 
 def get_component_container(context):

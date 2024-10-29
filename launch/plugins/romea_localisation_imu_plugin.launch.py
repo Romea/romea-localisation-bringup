@@ -54,7 +54,7 @@ def get_imu_meta_description(context):
 
 
 def get_restamping(context):
-    return bool(LaunchConfiguration("restamping").perform(context))
+    return LaunchConfiguration("restamping").perform(context).lower() == "true"
 
 
 def get_component_container(context):
